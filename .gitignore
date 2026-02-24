@@ -1,207 +1,113 @@
-# Byte-compiled / optimized / DLL files
-__pycache__/
-*.py[codz]
-*$py.class
+import streamlit as st
+import requests
 
-# C extensions
-*.so
+API_KEY = "10aac090704913dc4b32439444463426"
 
-# Distribution / packaging
-.Python
-build/
-develop-eggs/
-dist/
-downloads/
-eggs/
-.eggs/
-lib/
-lib64/
-parts/
-sdist/
-var/
-wheels/
-share/python-wheels/
-*.egg-info/
-.installed.cfg
-*.egg
-MANIFEST
+st.set_page_config(page_title="AQI", page_icon="🌫", layout="centered")
 
-# PyInstaller
-#  Usually these files are written by a python script from a template
-#  before PyInstaller builds the exe, so as to inject date/other infos into it.
-*.manifest
-*.spec
+# --- Classy Minimal Styling ---
+st.markdown("""
+    <style>
+    .block-container {
+        max-width: 750px;
+        padding-top: 2.5rem;
+    }
 
-# Installer logs
-pip-log.txt
-pip-delete-this-directory.txt
+    /* Metric card box */
+    .stMetric {
+        background-color: #f8fafc;
+        padding: 15px;
+        border-radius: 12px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
 
-# Unit test / coverage reports
-htmlcov/
-.tox/
-.nox/
-.coverage
-.coverage.*
-.cache
-nosetests.xml
-coverage.xml
-*.cover
-*.py.cover
-.hypothesis/
-.pytest_cache/
-cover/
+    /* Metric LABEL (PM2.5 etc) */
+    .stMetric label {
+        color: #111827 !important;
+        font-weight: 600;
+    }
 
-# Translations
-*.mo
-*.pot
+    /* Metric VALUE (numbers) */
+    div[data-testid="stMetricValue"] {
+        color: #111827 !important;
+        font-weight: 700;
+    }
 
-# Django stuff:
-*.log
-local_settings.py
-db.sqlite3
-db.sqlite3-journal
+    h2, h3 {
+        margin-top: 1.5rem;
+    }
+    </style>
+""", unsafe_allow_html=True)
 
-# Flask stuff:
-instance/
-.webassets-cache
+st.title("Air Quality Index")
 
-# Scrapy stuff:
-.scrapy
+city = st.text_input("City", placeholder="Start typing a city...")
 
-# Sphinx documentation
-docs/_build/
+# --- Auto Fetch ---
+if city and len(city) > 2:
 
-# PyBuilder
-.pybuilder/
-target/
+    geo_url = f"http://api.openweathermap.org/geo/1.0/direct?q={city}&limit=1&appid={API_KEY}"
+    geo_data = requests.get(geo_url).json()
 
-# Jupyter Notebook
-.ipynb_checkpoints
+    if geo_data:
 
-# IPython
-profile_default/
-ipython_config.py
+        name = geo_data[0]["name"]
+        country = geo_data[0]["country"]
+        lat = geo_data[0]["lat"]
+        lon = geo_data[0]["lon"]
 
-# pyenv
-#   For a library or package, you might want to ignore these files since the code is
-#   intended to run in multiple environments; otherwise, check them in:
-# .python-version
+        aqi_url = f"http://api.openweathermap.org/data/2.5/air_pollution?lat={lat}&lon={lon}&appid={API_KEY}"
+        aqi_data = requests.get(aqi_url).json()
 
-# pipenv
-#   According to pypa/pipenv#598, it is recommended to include Pipfile.lock in version control.
-#   However, in case of collaboration, if having platform-specific dependencies or dependencies
-#   having no cross-platform support, pipenv may install dependencies that don't work, or not
-#   install all needed dependencies.
-#Pipfile.lock
+        aqi = aqi_data["list"][0]["main"]["aqi"]
 
-# UV
-#   Similar to Pipfile.lock, it is generally recommended to include uv.lock in version control.
-#   This is especially recommended for binary packages to ensure reproducibility, and is more
-#   commonly ignored for libraries.
-#uv.lock
+        labels = {
+            1: "Good",
+            2: "Fair",
+            3: "Moderate",
+            4: "Poor",
+            5: "Very Poor"
+        }
 
-# poetry
-#   Similar to Pipfile.lock, it is generally recommended to include poetry.lock in version control.
-#   This is especially recommended for binary packages to ensure reproducibility, and is more
-#   commonly ignored for libraries.
-#   https://python-poetry.org/docs/basic-usage/#commit-your-poetrylock-file-to-version-control
-#poetry.lock
-#poetry.toml
+        category = labels.get(aqi, "Unknown")
 
-# pdm
-#   Similar to Pipfile.lock, it is generally recommended to include pdm.lock in version control.
-#   pdm recommends including project-wide configuration in pdm.toml, but excluding .pdm-python.
-#   https://pdm-project.org/en/latest/usage/project/#working-with-version-control
-#pdm.lock
-#pdm.toml
-.pdm-python
-.pdm-build/
+        st.subheader(f"{name}, {country}")
 
-# pixi
-#   Similar to Pipfile.lock, it is generally recommended to include pixi.lock in version control.
-#pixi.lock
-#   Pixi creates a virtual environment in the .pixi directory, just like venv module creates one
-#   in the .venv directory. It is recommended not to include this directory in version control.
-.pixi
+        # --- Classy AQI Color ---
+        color_map = {
+            1: "#22c55e",
+            2: "#84cc16",
+            3: "#eab308",
+            4: "#f97316",
+            5: "#ef4444"
+        }
 
-# PEP 582; used by e.g. github.com/David-OConnor/pyflow and github.com/pdm-project/pdm
-__pypackages__/
+        aqi_color = color_map.get(aqi, "#6b7280")
 
-# Celery stuff
-celerybeat-schedule
-celerybeat.pid
+        st.markdown(
+            f"<h1 style='color:{aqi_color}; margin-bottom:0; font-size:70px; font-weight:800;'>{aqi}</h1>",
+            unsafe_allow_html=True
+        )
+        st.caption(f"Condition: {category}")
 
-# SageMath parsed files
-*.sage.py
+        components = aqi_data["list"][0]["components"]
 
-# Environments
-.env
-.envrc
-.venv
-env/
-venv/
-ENV/
-env.bak/
-venv.bak/
+        st.divider()
+        st.subheader("Pollutant Details")
 
-# Spyder project settings
-.spyderproject
-.spyproject
+        col1, col2, col3 = st.columns(3)
 
-# Rope project settings
-.ropeproject
+        with col1:
+            st.metric("PM2.5", round(components["pm2_5"], 1))
+            st.metric("PM10", round(components["pm10"], 1))
 
-# mkdocs documentation
-/site
+        with col2:
+            st.metric("NO2", round(components["no2"], 1))
+            st.metric("O3", round(components["o3"], 1))
 
-# mypy
-.mypy_cache/
-.dmypy.json
-dmypy.json
+        with col3:
+            st.metric("CO", round(components["co"], 1))
+            st.metric("SO2", round(components["so2"], 1))
 
-# Pyre type checker
-.pyre/
-
-# pytype static type analyzer
-.pytype/
-
-# Cython debug symbols
-cython_debug/
-
-# PyCharm
-#  JetBrains specific template is maintained in a separate JetBrains.gitignore that can
-#  be found at https://github.com/github/gitignore/blob/main/Global/JetBrains.gitignore
-#  and can be added to the global gitignore or merged into this file.  For a more nuclear
-#  option (not recommended) you can uncomment the following to ignore the entire idea folder.
-#.idea/
-
-# Abstra
-# Abstra is an AI-powered process automation framework.
-# Ignore directories containing user credentials, local state, and settings.
-# Learn more at https://abstra.io/docs
-.abstra/
-
-# Visual Studio Code
-#  Visual Studio Code specific template is maintained in a separate VisualStudioCode.gitignore 
-#  that can be found at https://github.com/github/gitignore/blob/main/Global/VisualStudioCode.gitignore
-#  and can be added to the global gitignore or merged into this file. However, if you prefer, 
-#  you could uncomment the following to ignore the entire vscode folder
-# .vscode/
-
-# Ruff stuff:
-.ruff_cache/
-
-# PyPI configuration file
-.pypirc
-
-# Cursor
-#  Cursor is an AI-powered code editor. `.cursorignore` specifies files/directories to
-#  exclude from AI features like autocomplete and code analysis. Recommended for sensitive data
-#  refer to https://docs.cursor.com/context/ignore-files
-.cursorignore
-.cursorindexingignore
-
-# Marimo
-marimo/_static/
-marimo/_lsp/
-__marimo__/
+    else:
+        st.error("City not found")
