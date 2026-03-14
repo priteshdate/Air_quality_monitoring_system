@@ -9,7 +9,7 @@ from streamlit_folium import st_folium
 
 
 def check_password():
-    if st.text_input("Enter Password", type="password" == st.secrets["1234"]:
+    if st.text_input("Enter Password", type="password") == st.secrets["password"]:
         return True
     st.error("Invalid Password")
     return False
