@@ -11,8 +11,9 @@ from streamlit_folium import st_folium
 def check_password():
     if st.text_input("Enter Password", type="password") == st.secrets["password"]:
         return True
-    st.error("Invalid Password")
-    return False
+    else:
+        st.error("Invalid Password")
+        return False
 
 if check_password():
     # =============================
@@ -249,27 +250,27 @@ if check_password():
     
                     <div style="display:flex;align-items:center;margin-bottom:6px;">
                     <span style="width:12px;height:12px;background:#00e400;border-radius:50%;display:inline-block;margin-right:8px;"></span>
-                    0 – 0.5  →  Good (0–50)
+                    1  →  Good (0–50)
                     </div>
     
                     <div style="display:flex;align-items:center;margin-bottom:6px;">
                     <span style="width:12px;height:12px;background:#9cff00;border-radius:50%;display:inline-block;margin-right:8px;"></span>
-                    0.5 – 1  →  Satisfactory (51–100)
+                    2   →  Satisfactory (51–100)
                     </div>
     
                     <div style="display:flex;align-items:center;margin-bottom:6px;">
                     <span style="width:12px;height:12px;background:#ffff00;border-radius:50%;display:inline-block;margin-right:8px;"></span>
-                    1 – 2  →  Moderate (101–200)
+                    3 →  Moderate (101–200)
                     </div>
     
                     <div style="display:flex;align-items:center;margin-bottom:6px;">
                     <span style="width:12px;height:12px;background:#ff7e00;border-radius:50%;display:inline-block;margin-right:8px;"></span>
-                    2 – 3  →  Poor (201–300)
+                    4 →  Poor (201–300)
                     </div>
     
                     <div style="display:flex;align-items:center;">
                     <span style="width:12px;height:12px;background:#ff0000;border-radius:50%;display:inline-block;margin-right:8px;"></span>
-                    3 – 5  →  Severe (301–500)
+                    5  →  Severe (301–500)
                     </div>
     
                     </div>
