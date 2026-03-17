@@ -6,7 +6,7 @@ from streamlit_autorefresh import st_autorefresh
 import requests
 import folium
 from streamlit_folium import st_folium
-
+from Extra_feature.penalty import show_penalty
 
 def check_password():
     if st.text_input("Enter Password", type="password") == st.secrets["password"]:
