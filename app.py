@@ -389,7 +389,7 @@ if check_password():
                 """, unsafe_allow_html=True)
     
                 st.plotly_chart(fig2, width='stretch')
-                show_penalty()
+                show_penalty(aqi,components)
     if st.button("⬅ Back to Home"):
         st.session_state.page = "home"
         st.rerun()
