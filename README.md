@@ -7,6 +7,7 @@ Features:
 - Interactive map
 - Real-time pollution data
 - Forecast visualization
+- Penalty Framework For India
 
 API Used:
 OpenWeatherMap Air Pollution API
